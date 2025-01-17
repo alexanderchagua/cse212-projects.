@@ -8,10 +8,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 public class TakingTurnsQueueTests
 {
     [TestMethod]
-    // Scenario: Create a queue with the following people and turns: Bob (2), Tim (5), Sue (3) and
-    // run until the queue is empty
+    // Run until the queue is empty.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: Incorrect enqueue behavior (people were being added at the front of the queue, not the back).
+    // Solution: Fixed `Enqueue` method in `TakingTurnsQueue` to ensure people are added to the back of the queue.
     public void TestTakingTurnsQueue_FiniteRepetition()
     {
         var bob = new Person("Bob", 2);
@@ -30,7 +30,7 @@ public class TakingTurnsQueueTests
         {
             if (i >= expectedResult.Length)
             {
-                Assert.Fail("Queue should have ran out of items by now.");
+                Assert.Fail("Queue should have run out of items by now.");
             }
 
             var person = players.GetNextPerson();
@@ -40,10 +40,11 @@ public class TakingTurnsQueueTests
     }
 
     [TestMethod]
-    // Scenario: Create a queue with the following people and turns: Bob (2), Tim (5), Sue (3)
-    // After running 5 times, add George with 3 turns.  Run until the queue is empty.
-    // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, George, Sue, Tim, George, Tim, George
-    // Defect(s) Found: 
+    // Scenario: Create a queue with the following people and turns: Bob (2), Tim (5), Sue (3).
+    // After running 5 times, add George with 3 turns. Run until the queue is empty.
+    // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, George, Sue, Tim, George, Tim, George.
+    // Defect(s) Found: `AddPerson` midway does not correctly integrate new players into the rotation after existing turns.
+    // Solution: Ensure `AddPerson` adds players in the proper order while respecting their turn limits.
     public void TestTakingTurnsQueue_AddPlayerMidway()
     {
         var bob = new Person("Bob", 2);
@@ -71,7 +72,7 @@ public class TakingTurnsQueueTests
         {
             if (i >= expectedResult.Length)
             {
-                Assert.Fail("Queue should have ran out of items by now.");
+                Assert.Fail("Queue should have run out of items by now.");
             }
 
             var person = players.GetNextPerson();
@@ -82,10 +83,11 @@ public class TakingTurnsQueueTests
     }
 
     [TestMethod]
-    // Scenario: Create a queue with the following people and turns: Bob (2), Tim (Forever), Sue (3)
+    // Scenario: Create a queue with the following people and turns: Bob (2), Tim (Forever), Sue (3).
     // Run 10 times.
-    // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
-    // Defect(s) Found: 
+    // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim.
+    // Defect(s) Found: People with "Forever" (0) turns were removed after rotation.
+    // Solution: Ensure infinite-turn players remain in the queue indefinitely.
     public void TestTakingTurnsQueue_ForeverZero()
     {
         var timTurns = 0;
@@ -113,10 +115,11 @@ public class TakingTurnsQueueTests
     }
 
     [TestMethod]
-    // Scenario: Create a queue with the following people and turns: Tim (Forever), Sue (3)
+    // Scenario: Create a queue with the following people and turns: Tim (Forever), Sue (3).
     // Run 10 times.
-    // Expected Result: Tim, Sue, Tim, Sue, Tim, Sue, Tim, Tim, Tim, Tim
-    // Defect(s) Found: 
+    // Expected Result: Tim, Sue, Tim, Sue, Tim, Sue, Tim, Tim, Tim, Tim.
+    // Defect(s) Found: Players with negative turns (-3) were not treated as infinite-turn players.
+    // Solution: Adjust logic to handle negative turns correctly as infinite.
     public void TestTakingTurnsQueue_ForeverNegative()
     {
         var timTurns = -3;
@@ -141,9 +144,10 @@ public class TakingTurnsQueueTests
     }
 
     [TestMethod]
-    // Scenario: Try to get the next person from an empty queue
+    // Scenario: Try to get the next person from an empty queue.
     // Expected Result: Exception should be thrown with appropriate error message.
-    // Defect(s) Found: 
+    // Defect(s) Found: Empty queue did not throw the correct exception or provided an unclear message.
+    // Solution: Ensure `GetNextPerson` throws `InvalidOperationException` with the message "No one in the queue."
     public void TestTakingTurnsQueue_Empty()
     {
         var players = new TakingTurnsQueue();
