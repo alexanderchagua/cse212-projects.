@@ -25,7 +25,7 @@ public class Maze
     /// 
     /// 0 = Wall (You can't go through this)
     /// 1 = Open Path (You can go through this)
-    /// 2 = End (You want to get to this point to win)
+    /// 2 = End (You wanto t get to this point to win)
     /// 
     /// See the Prove instructions for graphical representations of
     /// the 2 test mazes defined below.
